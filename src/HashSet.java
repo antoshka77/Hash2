@@ -75,7 +75,7 @@ class HashSet {
         this.keys = arr.clone();
     }
 
-    // хэш-функция (для других типов следует изменить)
+    // хэш-функция
     int hashCode(int x) {
         return (x >> 15) ^ x;
     }
