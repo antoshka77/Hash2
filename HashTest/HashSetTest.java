@@ -1,22 +1,30 @@
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashSetTest {
     @Test
     void add() {
-        HashSet i = new HashSet(0);
+        HashSet i = new HashSet(2);
         i.add(5);
-        assertEquals(5, i.keys[0]);
+        assertEquals(i.link, 1);
+        assertNotNull(i.keys[i.index(5)]);
 
-        HashSet i1 = new HashSet(2);
+        HashSet i1 = new HashSet(4);
         i1.add(4);
         i1.add(5);
         i1.add(1);
         i1.add(2);
         i1.add(3);
-        int ind = Math.abs(hash(4)) % 2;
-        assertEquals(4, i1.keys[ind]);
+        i1.add(35);
+        i1.add(-43);
+        i1.add(-67);
+        i1.add(29);
+        i1.add(4);
+        assertEquals(9, i1.link);
     }
 
     @Test
@@ -65,11 +73,43 @@ class HashSetTest {
 
         i.add(0);
         assertTrue(i.contains(0));
+
+
+        assertTrue(i.contains(5));
+        assertTrue(i.contains(4));
+        assertFalse(i.contains(7));
+        assertTrue(i.contains(0));
+        assertTrue(i.contains(10));
     }
 
+    @Test
+    void remove() {
 
+        HashSet i1 = new HashSet();
+        i1.add(4);
+        i1.add(35);
+        i1.add(5);
+        i1.add(1);
+        i1.add(2);
+        i1.add(3);
+        i1.add(-43);
+        i1.add(-67);
+        i1.add(29);
+        i1.add(4);
+        assertEquals(9, i1.link);
 
-    private int hash(int x) {
-        return (x >> 15) ^ x;
+        i1.remove(4);
+        i1.remove(5);
+        i1.remove(1);
+        i1.remove(2);
+        i1.remove(3);
+        i1.remove(35);
+        i1.remove(-43);
+        i1.remove(-67);
+        i1.remove(29);
+        i1.remove(4);
+        System.out.println(i1);
+        assertEquals(0, i1.link);
+        assertEquals(i1, new HashSet());
     }
 }

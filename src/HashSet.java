@@ -1,50 +1,87 @@
-import java.util.Arrays;
 
 class HashSet {
-    private int FREE = Integer.MIN_VALUE;
     private int size;
-    int[] keys;
-    private int link = 0;
+    Entry[] keys;
+    int link = 0;
 
     // Конструктор
     HashSet(int size) {
-        this.size = Math.max(3 * size / 2, size) + 1;
-        keys = new int[this.size];
-        Arrays.fill(keys, FREE);
+        if (size < 2)
+            this.size = 2;
+        else
+            this.size = size;
+        keys = new Entry[this.size];
+    }
+
+    HashSet() {
+        this(16);
+    }
+
+    class Entry {
+        int value;
+        Entry next = null;
+
+        Entry(int init) {
+            value = init;
+            link++;
+        }
+
+        boolean equals(Entry other) {
+            Entry a, b;
+            for (a = this, b = other; a != null && b != null; a = a.next, b = b.next) {
+                if (a.value != b.value)
+                    return false;
+            }
+            return a == b;
+        }
     }
 
     // Добавляет элемент в множество
     void add(int x) {
-        if (link == size)
+        int ind = index(x);
+        if (keys[ind] == null) {
+            keys[ind] = new Entry(x);
+        } else {
+            Entry pre = keys[ind];
+            for (Entry current = pre; current != null; pre = current, current = current.next) {
+                if (current.value == x)
+                    return;
+            }
+            pre.next = new Entry(x);
+        }
+        if (link == size) {
             resize();
-        if (!contains(x)) {
-            for (int i = index(hashCode(x)); ; i++) {
-                if (i == size) i = 0;
-                if (keys[i] != x) {
-                    if (keys[i] == FREE) {
-                        keys[i] = x;
-                        link++;
-                        break;
-                    }
-                } else break;
+        }
+    }
+
+    // Удалить элемент из множества
+    boolean remove(int x) {
+        int ind = index(x);
+        Entry current = keys[ind];
+        if (current == null)
+            return false;
+        if (current.value == x) {
+            link--;
+            keys[ind] = current.next;
+            return true;
+        }
+        for (Entry pre = current; current != null; pre = current, current = current.next) {
+            if (x == current.value) {
+                link--;
+                pre.next = current.next;
+                return true;
             }
         }
+        return false;
     }
 
     // Проверяет, содержится ли элемент в множестве
     boolean contains(int x) {
-        int circle = 0;
-        int value = index(hashCode(x));
-        if (value > size) return false;
-        for (int i = value; ; i++) {
-            if (i == size){
-                i = 0;
-                circle++;
-            }
-            if (keys[i] == x) return true;
-            if (keys[i] == FREE) return false;
-            if (circle > 0) return false;
+        for (Entry current = keys[index(x)]; current != null; current = current.next) {
+            if (x == current.value)
+                return true;
         }
+        return false;
     }
 
     // проверяет на равенство
@@ -52,32 +89,29 @@ class HashSet {
     public boolean equals(Object otherHash){
         if (otherHash instanceof HashSet){
             HashSet other = (HashSet) otherHash;
-            if (size != other.size)
+            if (size != other.size || link != other.link)
                 return false;
             for (int i = 0; i < size; i++){
-                if (keys[i] != other.keys[i])
+                Entry a = keys[i], b = other.keys[i];
+                if (a != b && (a == null || b == null || !a.equals(b)))
                     return false;
             }
-
+            return true;
         }
-        return true;
+        return false;
     }
 
     // Увеличивает размер таблицы, если идет переполнение
     private void resize(){
-        int[] arr = new int[size * 2];
-        Arrays.fill(arr, FREE);
-
-        for (int i = 0; i < size; i++){
-            arr[i] = keys[i];
+        size = size * 2;
+        Entry[] old = keys;
+        keys = new Entry[size];
+        link = 0;
+        for (Entry element : old) {
+            for (Entry current = element; current != null; current = current.next) {
+                add(current.value);
+            }
         }
-        this.size = size * 2;
-        this.keys = arr.clone();
-    }
-
-    // хэш-функция
-    int hashCode(int x) {
-        return (x >> 15) ^ x;
     }
 
     // возвращает отступ для данного значения хэш-функции
