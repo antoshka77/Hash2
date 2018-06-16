@@ -33,7 +33,7 @@ class HashSetTest {
         i.add(5);
         HashSet j = new HashSet(1);
         j.add(5);
-        assertTrue(i.equals(j));
+        assertEquals(i, j);
 
         HashSet i1 = new HashSet(1);
         i1.add(5);
@@ -41,20 +41,20 @@ class HashSetTest {
         HashSet j1 = new HashSet(1);
         j1.add(5);
         j1.add(4);
-        assertFalse(i1.equals(j1));
+        assertNotEquals(i1, j1);
 
         HashSet i2 = new HashSet(3);
         i2.add(5);
         i2.add(6);
         HashSet j2 = new HashSet(3);
         j2.add(5);
-        assertFalse(i2.equals(j2));
+        assertNotEquals(i2, j2);
 
         HashSet i3 = new HashSet(1);
         i3.add(5);
         HashSet j3 = new HashSet(3);
         j3.add(5);
-        assertFalse(i3.equals(j3));
+        assertNotEquals(i3, j3);
     }
 
     @Test
